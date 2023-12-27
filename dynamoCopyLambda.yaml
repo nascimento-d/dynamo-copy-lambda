@@ -10,7 +10,6 @@ Parameters:
   OwnerName:
     Description: An owner name, used in tags
     Type: String
-    Default: daniel.sernatinger
 
   SourceTableName:  
     Description: DynamoDB table name to copy data from
