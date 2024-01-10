@@ -86,17 +86,16 @@ Resources:
               print( "DynamoDB: copy items {0} --> {1}".format(src_table, dst_table))
 
               # create client
-              src_client = boto3.client('dynamodb')
-              dst_client = boto3.client('dynamodb')
+              dynamo_client = boto3.client('dynamodb')
 
               # scan
               dynamo_items = []
-              api_response = src_client.scan(TableName=src_table,Select='ALL_ATTRIBUTES')
+              api_response = dynamo_client.scan(TableName=src_table,Select='ALL_ATTRIBUTES')
               dynamo_items.extend(api_response['Items'])
               print( "Collected total {0} items from table {1}".format(len(dynamo_items), src_table))
 
               while 'LastEvaluatedKey' in api_response:
-                  api_response = src_client.scan(TableName=src_table,
+                  api_response = dynamo_client.scan(TableName=src_table,
                       Select='ALL_PROJECTED_ATTRIBUTES',
                       ExclusiveStartKey=api_response['LastEvaluatedKey'])
                   dynamo_items.extend(api_response['Items'])
@@ -121,7 +120,7 @@ Resources:
                   if len(chunk) > 0:
                       write_request = {}
                       write_request[dst_table] = list(map(lambda x:{'PutRequest':{'Item':x}}, chunk))
-                      dst_client.batch_write_item(RequestItems=write_request)
+                      dynamo_client.batch_write_item(RequestItems=write_request)
                   else:
                       print ("No items in chunk - chunk empty")
 
